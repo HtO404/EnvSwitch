@@ -1,0 +1,161 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 420" width="720" height="420" role="img" aria-label="EnvSwitch 界面动效：昼夜主题切换、滑块选中、逐行 diff 与一键启动">
+  <title>EnvSwitch · 环境启动器（界面动效）</title>
+  <style>
+    /* 色板与程序内 token 一致：白天 橙/白，夜晚 湖绿/黑 */
+    .bg      { animation: c-bg 9s ease-in-out infinite; }
+    .surf    { animation: c-surf 9s ease-in-out infinite; }
+    .line    { animation: c-line 9s ease-in-out infinite; }
+    .ink     { animation: c-ink 9s ease-in-out infinite; }
+    .ink2    { animation: c-ink2 9s ease-in-out infinite; }
+    .brand   { animation: c-brand 9s ease-in-out infinite; }
+    .soft    { animation: c-soft 9s ease-in-out infinite; }
+    .onbrand { animation: c-onbrand 9s ease-in-out infinite; }
+    @keyframes c-bg      { 0%,38%   { fill:#FEFEFE } 50%,88% { fill:#0A0D0C } 100% { fill:#FEFEFE } }
+    @keyframes c-surf    { 0%,38%   { fill:#FFFFFF } 50%,88% { fill:#121615 } 100% { fill:#FFFFFF } }
+    @keyframes c-line    { 0%,38%   { stroke:#E6E6E6 } 50%,88% { stroke:#223029 } 100% { stroke:#E6E6E6 } }
+    @keyframes c-ink     { 0%,38%   { fill:#1A1D1C } 50%,88% { fill:#E7EFEC } 100% { fill:#1A1D1C } }
+    @keyframes c-ink2    { 0%,38%   { fill:#6B7370 } 50%,88% { fill:#93A39E } 100% { fill:#6B7370 } }
+    @keyframes c-brand   { 0%,38%   { fill:#B34A0C } 50%,88% { fill:#3ED0AE } 100% { fill:#B34A0C } }
+    @keyframes c-soft    { 0%,38%   { fill:#FFF3E9 } 50%,88% { fill:#0E2019 } 100% { fill:#FFF3E9 } }
+    @keyframes c-onbrand { 0%,38%   { fill:#FFFFFF } 50%,88% { fill:#04120E } 100% { fill:#FFFFFF } }
+    /* 滑块拇指：跟着主题一起滑动（自动 → 夜晚），再滑回来 */
+    .thumb { animation: slide 9s cubic-bezier(.3,.9,.2,1) infinite; }
+    @keyframes slide { 0%,8% { transform: translate(0,0) } 20%,34% { transform: translate(58px,0) }
+                       50%,84% { transform: translate(116px,0) } 94%,100% { transform: translate(0,0) } }
+    /* 启动按钮：呼吸一下 */
+    .pulse { transform-origin: 620px 150px; animation: pulse 3s ease-in-out infinite; }
+    @keyframes pulse { 0%,100% { opacity:1 } 50% { opacity:.82 } }
+    /* 自动识别扫描光带 */
+    .beam { animation: beam 9s linear infinite; }
+    @keyframes beam { 0% { transform: translate(-40px,0); opacity:0 } 6% { opacity:.9 }
+                      26% { transform: translate(700px,0); opacity:0 } 100% { transform: translate(700px,0); opacity:0 } }
+    /* 新值高亮：写入瞬间闪一下 */
+    .flash { animation: flash 9s ease-in-out infinite; }
+    @keyframes flash { 0%,10% { opacity:0 } 16%,30% { opacity:1 } 40%,100% { opacity:0 } }
+    .txt { font-family: "Segoe UI","Microsoft YaHei",system-ui,sans-serif; }
+  </style>
+
+  <defs>
+    <clipPath id="win"><rect x="60" y="40" width="600" height="340" rx="6"/></clipPath>
+  </defs>
+
+  <!-- 窗口 -->
+  <g clip-path="url(#win)">
+    <rect class="bg" x="60" y="40" width="600" height="340"/>
+    <!-- 顶栏 -->
+    <rect class="bg" x="60" y="40" width="600" height="46"/>
+    <line class="line" x1="60" y1="86" x2="660" y2="86" stroke-width="1"/>
+    <rect class="brand" x="76" y="55" width="16" height="16" rx="2"/>
+    <text class="ink txt" x="100" y="69" font-size="14" font-weight="700">EnvSwitch</text>
+    <rect class="brand" x="196" y="55" width="132" height="16" rx="3" opacity=".92"/>
+    <text class="onbrand txt" x="204" y="67" font-size="9" font-family="Consolas,monospace">线上 · 10.0.0.100</text>
+    <!-- 主题滑块 -->
+    <rect class="line" x="470" y="53" width="176" height="22" rx="3" fill="none"/>
+    <rect class="soft" x="472" y="55" width="58" height="18" rx="2"/>
+    <rect class="thumb" x="472" y="55" width="58" height="18" rx="2" fill="none" stroke="none"/>
+    <rect class="thumb brand" x="472" y="55" width="58" height="18" rx="2" opacity=".16"/>
+    <text class="ink2 txt" x="488" y="68" font-size="10">自动</text>
+    <text class="ink2 txt" x="546" y="68" font-size="10">白天</text>
+    <text class="ink2 txt" x="604" y="68" font-size="10">夜晚</text>
+
+    <!-- 工作流条 -->
+    <rect class="bg" x="60" y="87" width="600" height="62"/>
+    <line class="line" x1="60" y1="149" x2="660" y2="149" stroke-width="1"/>
+    <g>
+      <rect class="surf" x="76" y="99" width="112" height="38" rx="4"/>
+      <rect class="line" x="76" y="99" width="112" height="38" rx="4" fill="none"/>
+      <rect class="soft" x="88" y="110" width="16" height="16" rx="2"/>
+      <text class="ink txt" x="94" y="122" font-size="9" font-family="Consolas,monospace">1</text>
+      <text class="ink txt" x="112" y="115" font-size="10" font-weight="600">客户端 · 线上</text>
+      <text class="ink2 txt" x="112" y="128" font-size="9">拉取基准数据</text>
+    </g>
+    <g>
+      <rect class="soft" x="198" y="99" width="112" height="38" rx="4"/>
+      <rect class="brand" x="198" y="99" width="112" height="38" rx="4" fill="none"/>
+      <rect class="brand" x="210" y="110" width="16" height="16" rx="2"/>
+      <text class="onbrand txt" x="216" y="122" font-size="9" font-family="Consolas,monospace">2</text>
+      <text class="brand txt" x="234" y="115" font-size="10" font-weight="600">客户端 · 本地</text>
+      <text class="ink2 txt" x="234" y="128" font-size="9">核对拉取的数据</text>
+    </g>
+    <g>
+      <rect class="surf" x="320" y="99" width="112" height="38" rx="4"/>
+      <rect class="line" x="320" y="99" width="112" height="38" rx="4" fill="none"/>
+      <rect class="soft" x="332" y="110" width="16" height="16" rx="2"/>
+      <text class="ink txt" x="338" y="122" font-size="9" font-family="Consolas,monospace">3</text>
+      <text class="ink txt" x="356" y="115" font-size="10" font-weight="600">管理端 · 本地</text>
+      <text class="ink2 txt" x="356" y="128" font-size="9">改参数 / 录枚举</text>
+    </g>
+    <g class="pulse">
+      <rect class="brand" x="546" y="97" width="98" height="34" rx="3"/>
+      <text class="onbrand txt" x="580" y="119" font-size="12" font-weight="600">启动</text>
+    </g>
+    <text class="brand txt" x="546" y="143" font-size="9">单击选中 · 双击启动</text>
+
+    <!-- 左卡片 -->
+    <rect class="surf" x="76" y="163" width="204" height="96" rx="4"/>
+    <rect class="line" x="76" y="163" width="204" height="96" rx="4" fill="none"/>
+    <text class="ink txt" x="90" y="185" font-size="12" font-weight="700">客户端 DemoClient</text>
+    <text class="ink2 txt" x="90" y="203" font-size="9" font-family="Consolas,monospace">DemoClient.exe  1.8.3.6</text>
+    <text class="ink2 txt" x="90" y="218" font-size="9" font-family="Consolas,monospace">D:\Demo\DemoClient</text>
+    <text class="ink2 txt" x="90" y="240" font-size="9">配置：url 10.0.0.100 · 版本 proj-2</text>
+
+    <rect class="soft" x="76" y="269" width="204" height="96" rx="4"/>
+    <rect class="brand" x="76" y="269" width="204" height="96" rx="4" fill="none"/>
+    <rect class="brand" x="258" y="278" width="10" height="10" rx="1"/>
+    <text class="ink txt" x="90" y="291" font-size="12" font-weight="700">管理端 DemoConsole</text>
+    <text class="ink2 txt" x="90" y="309" font-size="9" font-family="Consolas,monospace">DemoConsole.exe  1.8.1.0</text>
+    <text class="ink2 txt" x="90" y="324" font-size="9" font-family="Consolas,monospace">D:\Demo\DemoConsole</text>
+    <text class="brand txt" x="90" y="346" font-size="9">配置：url 10.0.0.100 · 版本 proj-2</text>
+
+    <!-- 右侧：将要写入 -->
+    <rect class="surf" x="294" y="163" width="350" height="202" rx="4"/>
+    <rect class="line" x="294" y="163" width="350" height="202" rx="4" fill="none"/>
+    <line class="line" x1="294" y1="193" x2="644" y2="193" stroke-width="1"/>
+    <text class="ink txt" x="306" y="185" font-size="11" font-weight="700">将要写入</text>
+    <text class="ink2 txt" x="560" y="185" font-size="9" font-family="Consolas,monospace">2 个文件 · 改 3 个值</text>
+
+    <text class="ink2 txt" x="306" y="211" font-size="9" font-family="Consolas,monospace">D:\Demo\DemoClient\appsettings.json</text>
+    <text class="ink2 txt" x="330" y="231" font-size="9" font-family="Consolas,monospace">url</text>
+    <text class="ink2 txt" x="392" y="231" font-size="9" font-family="Consolas,monospace">https://10.0.0.100/api/</text>
+    <text class="ink2 txt" x="560" y="231" font-size="9" font-family="Consolas,monospace">→</text>
+    <text class="brand txt" x="580" y="231" font-size="9" font-family="Consolas,monospace">https://127.0.0.1/api/</text>
+    <rect class="flash brand" x="574" y="220" width="66" height="14" rx="2" opacity="0"/>
+    <text class="ink2 txt" x="330" y="250" font-size="9" font-family="Consolas,monospace">ProjectName</text>
+    <text class="ink2 txt" x="420" y="250" font-size="9" font-family="Consolas,monospace">proj-2</text>
+    <text class="ink2 txt" x="560" y="250" font-size="9" font-family="Consolas,monospace">不变</text>
+
+    <text class="ink2 txt" x="306" y="277" font-size="9" font-family="Consolas,monospace">D:\Demo\DemoConsole\appsettings.json</text>
+    <text class="ink2 txt" x="330" y="297" font-size="9" font-family="Consolas,monospace">url</text>
+    <text class="ink2 txt" x="392" y="297" font-size="9" font-family="Consolas,monospace">https://10.0.0.100/api/</text>
+    <text class="ink2 txt" x="560" y="297" font-size="9" font-family="Consolas,monospace">→</text>
+    <text class="brand txt" x="580" y="297" font-size="9" font-family="Consolas,monospace">https://127.0.0.1/api/</text>
+    <text class="ink2 txt" x="330" y="316" font-size="9" font-family="Consolas,monospace">ProjectName</text>
+    <text class="ink2 txt" x="420" y="316" font-size="9" font-family="Consolas,monospace">proj-2</text>
+    <text class="ink2 txt" x="560" y="316" font-size="9" font-family="Consolas,monospace">不变</text>
+
+    <!-- 状态条 -->
+    <rect class="surf" x="60" y="349" width="600" height="31"/>
+    <line class="line" x1="60" y1="349" x2="660" y2="349" stroke-width="1"/>
+    <circle cx="80" cy="364" r="4" fill="#1F7A5C"/>
+    <text class="ink2 txt" x="90" y="368" font-size="9" font-family="Consolas,monospace">本地服务</text>
+    <circle cx="146" cy="364" r="4" fill="#1F7A5C"/>
+    <text class="ink2 txt" x="156" y="368" font-size="9" font-family="Consolas,monospace">127.0.0.1:443</text>
+    <circle cx="236" cy="364" r="4" class="brand"/>
+    <text class="ink2 txt" x="246" y="368" font-size="9" font-family="Consolas,monospace">线上</text>
+    <text class="ink2 txt" x="300" y="368" font-size="9" font-family="Consolas,monospace">实例：未运行</text>
+    <text class="ink2 txt" x="560" y="368" font-size="9" font-family="Consolas,monospace">导出诊断 · 说明</text>
+
+    <!-- 自动识别扫描光带 -->
+    <rect class="beam" x="60" y="40" width="26" height="340" fill="url(#beamgrad)" opacity="0"/>
+  </g>
+
+  <defs>
+    <linearGradient id="beamgrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#B34A0C" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#B34A0C" stop-opacity=".13"/>
+      <stop offset="100%" stop-color="#B34A0C" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="60" y="40" width="600" height="340" rx="6" fill="none" class="line" stroke-width="1"/>
+</svg>

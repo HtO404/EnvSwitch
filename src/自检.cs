@@ -139,6 +139,32 @@ namespace EnvSwitch
                 var p4 = WritePlan.Build("t", TempApp("样例", t3, false), cfg.Env("local"), "proj-1", true);
                 Check("坏 JSON 被拒绝写入", !p4.Ok, p4.Ok ? "竟然通过了" : p4.Error);
 
+                // 配置.json 往返：写出来必须能被自己读回来（曾因 JsonWriter 漏逗号导致静默回退默认值）
+                var t4 = Path.Combine(work, "配置往返");
+                Directory.CreateDirectory(t4);
+                var cfgPath = Path.Combine(t4, "配置.json");
+                var probe = AppConfig.Default();
+                probe.Theme = "night";
+                probe.Versions.Add("proj-ZZ");
+                probe.Apps["terminal"].Dir = @"D:\往返测试\DemoClient";
+                probe.Apps["studio"].AltDirs.Add(@"D:\往返测试\DemoConsole-2");
+                probe.Last = new LastChoice { App = "terminal", Env = "online", Version = "proj-ZZ", StudioDir = @"D:\往返测试\DemoConsole" };
+                probe.Save(cfgPath);
+                var text4 = File.ReadAllText(cfgPath, Encoding.UTF8);
+                object parsed4; string err4;
+                var jsonOk = Json.TryParse(text4, out parsed4, out err4);
+                var back = AppConfig.Load(cfgPath);
+                var roundOk = jsonOk
+                    && back.Theme == "night"
+                    && back.Versions.Contains("proj-ZZ")
+                    && back.Apps["terminal"].Dir == @"D:\往返测试\DemoClient"
+                    && back.Apps["studio"].AltDirs.Contains(@"D:\往返测试\DemoConsole-2")
+                    && back.Last != null && back.Last.App == "terminal" && back.Last.Env == "online"
+                    && back.Last.Version == "proj-ZZ" && back.Last.StudioDir == @"D:\往返测试\DemoConsole";
+                Check("配置.json 写出后能被读回（含中文/版本/目录/上次选择）", roundOk,
+                    jsonOk ? (roundOk ? "写出→解析→读回 全部一致（" + text4.Length + " 字节）" : "读回后字段不一致")
+                           : ("写出的是非法 JSON：" + err4));
+
                 // ---------- ③ 真文件往返（可选） ----------
                 Line("");
                 if (!realRound)

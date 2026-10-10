@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 
-namespace EnvSwitch
+namespace DiJian
 {
     /// <summary>
     /// 自带的小 JSON 读写（net48 没有 System.Text.Json，也不想为它多背几个 dll）。
@@ -220,62 +220,69 @@ namespace EnvSwitch
         }
     }
 
-    /// <summary>带缩进的 JSON 写出（自动管逗号，避免手写漏逗号/多逗号）。</summary>
+    /// <summary>
+    /// 带缩进的 JSON 写出。模型：每层容器记一个"已写成员数"，
+    /// 写成员前统一处理「逗号 + 换行 + 缩进」——这样逗号不可能漏（早期版本就是因为
+    /// 用 _pendingKey 状态判断，在"键→容器值"之后状态没清干净而漏过逗号）。
+    /// </summary>
     public sealed class JsonWriter
     {
         readonly StringBuilder _sb = new StringBuilder();
-        readonly List<bool> _hasItems = new List<bool>();
+        readonly List<int> _counts = new List<int>();     // 每层已写成员数
         readonly List<bool> _isArray = new List<bool>();
-        int _depth;
-        bool _pendingKey;
+        bool _afterKey;                                    // 刚写完 "键": ，下一个值直接跟在后面
 
-        public JsonWriter BeginObject() { Separate(); _sb.Append('{'); Push(false); _depth++; return this; }
-        public JsonWriter EndObject() { bool had = HadItems(); _depth--; if (had) NewLine(); _sb.Append('}'); Pop(); return this; }
-        public JsonWriter BeginArray() { Separate(); _sb.Append('['); Push(true); _depth++; return this; }
-        public JsonWriter EndArray() { bool had = HadItems(); _depth--; if (had) NewLine(); _sb.Append(']'); Pop(); return this; }
+        public JsonWriter BeginObject() { Open('{', false); return this; }
+        public JsonWriter BeginArray() { Open('[', true); return this; }
+        public JsonWriter EndObject() { Close('}'); return this; }
+        public JsonWriter EndArray() { Close(']'); return this; }
 
-        bool HadItems() { return _hasItems.Count > 0 && _hasItems[_hasItems.Count - 1]; }
+        public JsonWriter Key(string name)
+        {
+            Member();
+            Escape(name);
+            _sb.Append(": ");
+            _afterKey = true;
+            return this;
+        }
 
-        public JsonWriter Key(string name) { Separate(); NewLine(); Escape(name); _sb.Append(": "); _pendingKey = true; return this; }
-        public JsonWriter Value(string s) { Separate(); if (s == null) _sb.Append("null"); else Escape(s); _pendingKey = false; return this; }
-        public JsonWriter Value(int n) { Separate(); _sb.Append(n.ToString(CultureInfo.InvariantCulture)); return this; }
-        public JsonWriter Value(bool b) { Separate(); _sb.Append(b ? "true" : "false"); return this; }
-        public JsonWriter Raw(string json) { Separate(); _sb.Append(json); return this; }
+        public JsonWriter Value(string s) { Member(); if (s == null) _sb.Append("null"); else Escape(s); return this; }
+        public JsonWriter Value(int n) { Member(); _sb.Append(n.ToString(CultureInfo.InvariantCulture)); return this; }
+        public JsonWriter Value(bool b) { Member(); _sb.Append(b ? "true" : "false"); return this; }
+        public JsonWriter Raw(string json) { Member(); _sb.Append(json); return this; }
 
         public override string ToString() { return _sb.ToString(); }
 
-        void Push(bool array)
+        void Open(char c, bool array)
         {
-            _hasItems.Add(false);
+            Member();
+            _sb.Append(c);
+            _counts.Add(0);
             _isArray.Add(array);
         }
 
-        void Pop()
+        void Close(char c)
         {
-            if (_hasItems.Count > 0) { _hasItems.RemoveAt(_hasItems.Count - 1); _isArray.RemoveAt(_isArray.Count - 1); }
-            if (_hasItems.Count > 0) _hasItems[_hasItems.Count - 1] = true;
-            _pendingKey = false;
+            int written = 0;
+            if (_counts.Count > 0)
+            {
+                written = _counts[_counts.Count - 1];
+                _counts.RemoveAt(_counts.Count - 1);
+                _isArray.RemoveAt(_isArray.Count - 1);
+            }
+            if (written > 0) _sb.Append("\r\n").Append(' ', _counts.Count * 2);
+            _sb.Append(c);
         }
 
-        void Separate()
+        /// <summary>写一个成员/元素之前的统一处理：该加逗号就加，加换行缩进，并把本层计数 +1。</summary>
+        void Member()
         {
-            if (_pendingKey) return;                       // 刚写过键，直接写值
-            if (_hasItems.Count > 0 && _hasItems[_hasItems.Count - 1])
-            {
-                _sb.Append(',');
-                NewLine();
-            }
-            else if (_hasItems.Count > 0 && _sb.Length > 0 && (_sb[_sb.Length - 1] == '{' || _sb[_sb.Length - 1] == '['))
-            {
-                NewLine();                                  // 容器的第一个成员换行
-            }
-        }
-
-        void NewLine()
-        {
-            if (_hasItems.Count == 0) return;
-            _sb.Append("\r\n");
-            _sb.Append(' ', _depth * 2);
+            if (_afterKey) { _afterKey = false; return; }   // 对象成员的值：紧跟在键后面
+            if (_counts.Count == 0) return;                 // 根容器还没开始
+            int layer = _counts.Count - 1;
+            if (_counts[layer] > 0) _sb.Append(',');
+            _sb.Append("\r\n").Append(' ', _counts.Count * 2);
+            _counts[layer]++;
         }
 
         void Escape(string s)
