@@ -1,0 +1,362 @@
+<Window x:Class="EnvSwitch.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="EnvSwitch"
+        Width="1080" Height="800" MinWidth="960" MinHeight="700"
+        Background="{DynamicResource Bg}" Foreground="{DynamicResource Ink}"
+        FontFamily="{DynamicResource FontBody}" FontSize="13"
+        UseLayoutRounding="True" SnapsToDevicePixels="True"
+        TextOptions.TextFormattingMode="Ideal" TextOptions.TextRenderingMode="ClearType"
+        WindowStartupLocation="CenterScreen">
+
+    <Grid x:Name="Root">
+        <Grid.RowDefinitions>
+            <RowDefinition x:Name="RowHeader" Height="56"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition x:Name="RowStatus" Height="40"/>
+        </Grid.RowDefinitions>
+
+        <!-- ================= 顶栏 ================= -->
+        <Border x:Name="HeaderBar" Grid.Row="0" BorderBrush="{DynamicResource Line}" BorderThickness="0,0,0,1">
+            <Grid Margin="18,0">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <!-- 品牌标记：左橙右湖绿，与图标一致，不随主题变 -->
+                    <Border Width="18" Height="18" CornerRadius="2" ClipToBounds="True" VerticalAlignment="Center">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="2"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.Column="0" Background="{DynamicResource MarkDay}"/>
+                            <Border Grid.Column="2" Background="{DynamicResource MarkNight}"/>
+                        </Grid>
+                    </Border>
+                    <TextBlock Text="EnvSwitch" FontFamily="{DynamicResource FontDisplay}" FontWeight="Black"
+                               FontSize="17" VerticalAlignment="Center" Margin="9,0,0,0"
+                               Foreground="{DynamicResource Ink}"/>
+                    <Border x:Name="EnvBadge" CornerRadius="3" Padding="9,3" Margin="14,0,0,0" VerticalAlignment="Center">
+                        <TextBlock x:Name="EnvBadgeText" FontFamily="{DynamicResource FontMono}" FontSize="11"/>
+                    </Border>
+                    <TextBlock x:Name="VersionText" FontFamily="{DynamicResource FontMono}" FontSize="11"
+                               Foreground="{DynamicResource Ink3}" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <TextBlock Text="主题" Style="{StaticResource SectionLabel}" VerticalAlignment="Center" Margin="0,0,7,0"
+                               Foreground="{DynamicResource Ink2}"/>
+                    <Border BorderBrush="{DynamicResource Line}" BorderThickness="1" CornerRadius="3" Padding="2">
+                        <Grid x:Name="ThemeSlider">
+                            <Border x:Name="ThemeThumb" IsHitTestVisible="False" CornerRadius="2"
+                                    Background="{DynamicResource BrandSoft}" BorderBrush="{DynamicResource Brand}"
+                                    BorderThickness="1" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="0">
+                                <Border.RenderTransform>
+                                    <TranslateTransform x:Name="ThemeThumbShift"/>
+                                </Border.RenderTransform>
+                            </Border>
+                            <StackPanel Orientation="Horizontal">
+                                <RadioButton x:Name="ThemeAuto" Style="{StaticResource SegRadio}" Content="自动" GroupName="theme" Tag="auto" Checked="Theme_Checked"/>
+                                <RadioButton x:Name="ThemeDay" Style="{StaticResource SegRadio}" Content="白天" GroupName="theme" Tag="day" Checked="Theme_Checked"/>
+                                <RadioButton x:Name="ThemeNight" Style="{StaticResource SegRadio}" Content="夜晚" GroupName="theme" Tag="night" Checked="Theme_Checked"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                    <TextBlock Text="密度" Style="{StaticResource SectionLabel}" VerticalAlignment="Center" Margin="16,0,7,0"
+                               Foreground="{DynamicResource Ink2}"/>
+                    <Border BorderBrush="{DynamicResource Line}" BorderThickness="1" CornerRadius="3" Padding="2">
+                        <Grid x:Name="DensitySlider">
+                            <Border x:Name="DensityThumb" IsHitTestVisible="False" CornerRadius="2"
+                                    Background="{DynamicResource BrandSoft}" BorderBrush="{DynamicResource Brand}"
+                                    BorderThickness="1" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="0">
+                                <Border.RenderTransform>
+                                    <TranslateTransform x:Name="DensityThumbShift"/>
+                                </Border.RenderTransform>
+                            </Border>
+                            <StackPanel Orientation="Horizontal">
+                                <RadioButton x:Name="DensityComfort" Style="{StaticResource SegRadio}" Content="舒适" GroupName="density" Tag="comfortable" Checked="Density_Checked"/>
+                                <RadioButton x:Name="DensityCompact" Style="{StaticResource SegRadio}" Content="紧凑" GroupName="density" Tag="compact" Checked="Density_Checked"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- ================= 工作流 + 启动（上半区） ================= -->
+        <Border x:Name="WorkflowBar" Grid.Row="1" BorderBrush="{DynamicResource Line}" BorderThickness="0,0,0,1" Padding="18,16">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                    <!-- 单击 = 选中（主题色描边 + 淡底 + 主题色序号块）；双击 = 按这一步启动 -->
+                    <ToggleButton x:Name="Step1" Style="{StaticResource StepToggle}" Tag="terminal|online"
+                                  Click="Step_Click" MouseDoubleClick="Step_DoubleClick"
+                                  ToolTip="单击选中；双击按「终端 · 线上」启动（拉取基准数据）">
+                        <StackPanel Orientation="Horizontal">
+                            <Border x:Name="Step1Num" Width="20" Height="20" CornerRadius="2" BorderBrush="{DynamicResource Line}"
+                                    BorderThickness="1" VerticalAlignment="Center">
+                                <TextBlock x:Name="Step1NumText" Text="1" FontFamily="{DynamicResource FontMono}" FontSize="11"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
+                                <TextBlock Text="终端 · 线上" FontSize="12.5" FontWeight="SemiBold"/>
+                                <TextBlock Text="拉取基准数据" FontSize="11" Foreground="{DynamicResource Ink2}" Margin="0,2,0,0"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </ToggleButton>
+
+                    <ToggleButton x:Name="Step2" Style="{StaticResource StepToggle}" Tag="terminal|local"
+                                  Click="Step_Click" MouseDoubleClick="Step_DoubleClick"
+                                  ToolTip="单击选中；双击按「终端 · 本地」启动（核对拉到的数据）">
+                        <StackPanel Orientation="Horizontal">
+                            <Border x:Name="Step2Num" Width="20" Height="20" CornerRadius="2" BorderBrush="{DynamicResource Line}"
+                                    BorderThickness="1" VerticalAlignment="Center">
+                                <TextBlock x:Name="Step2NumText" Text="2" FontFamily="{DynamicResource FontMono}" FontSize="11"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
+                                <TextBlock Text="终端 · 本地" FontSize="12.5" FontWeight="SemiBold"/>
+                                <TextBlock Text="核对拉取的数据" FontSize="11" Foreground="{DynamicResource Ink2}" Margin="0,2,0,0"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </ToggleButton>
+
+                    <ToggleButton x:Name="Step3" Style="{StaticResource StepToggle}" Tag="studio|local"
+                                  Click="Step_Click" MouseDoubleClick="Step_DoubleClick"
+                                  ToolTip="单击选中；双击按「DemoConsole · 本地」启动（改参数 / 录枚举）">
+                        <StackPanel Orientation="Horizontal">
+                            <Border x:Name="Step3Num" Width="20" Height="20" CornerRadius="2" BorderBrush="{DynamicResource Line}"
+                                    BorderThickness="1" VerticalAlignment="Center">
+                                <TextBlock x:Name="Step3NumText" Text="3" FontFamily="{DynamicResource FontMono}" FontSize="11"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
+                                <TextBlock Text="DemoConsole · 本地" FontSize="12.5" FontWeight="SemiBold"/>
+                                <TextBlock Text="改参数 / 录枚举" FontSize="11" Foreground="{DynamicResource Ink2}" Margin="0,2,0,0"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </ToggleButton>
+
+                    <ToggleButton x:Name="Step4" Style="{StaticResource StepToggle}" Tag="studio|online" Margin="0"
+                                  Click="Step_Click" MouseDoubleClick="Step_DoubleClick"
+                                  ToolTip="单击选中；双击按「DemoConsole · 线上」启动（保存 → 提交）">
+                        <StackPanel Orientation="Horizontal">
+                            <Border x:Name="Step4Num" Width="20" Height="20" CornerRadius="2" BorderBrush="{DynamicResource Line}"
+                                    BorderThickness="1" VerticalAlignment="Center">
+                                <TextBlock x:Name="Step4NumText" Text="4" FontFamily="{DynamicResource FontMono}" FontSize="11"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
+                                <TextBlock Text="DemoConsole · 线上" FontSize="12.5" FontWeight="SemiBold"/>
+                                <TextBlock Text="保存 → 提交" FontSize="11" Foreground="{DynamicResource Ink2}" Margin="0,2,0,0"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </ToggleButton>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                    <Button x:Name="LaunchBtn" Style="{StaticResource BtnPrimary}" Width="150"
+                            Content="启动" Click="Launch_Click"
+                            ToolTip="按上面选中的软件与环境启动"/>
+                    <TextBlock Text="单击选中 · 双击启动" FontSize="11" Foreground="{DynamicResource Brand}"
+                               HorizontalAlignment="Right" Margin="0,8,0,0"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- ================= 主体 ================= -->
+        <Grid x:Name="BodyGrid" Grid.Row="2" Margin="18,16,18,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="330"/>
+                <ColumnDefinition Width="18"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- 左：软件卡片 -->
+            <StackPanel Grid.Column="0">
+                <TextBlock Text="软件" Style="{StaticResource SectionLabel}" Foreground="{DynamicResource Ink2}"/>
+
+                <RadioButton x:Name="AppTerminal" Style="{StaticResource CardRadio}" GroupName="app" Tag="terminal"
+                             Checked="App_Checked" Margin="0,9,0,0">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <DockPanel Grid.Row="0">
+                            <Border x:Name="TerminalMark" DockPanel.Dock="Right" Width="11" Height="11" CornerRadius="1"
+                                    BorderBrush="{DynamicResource Ink3}" BorderThickness="1" VerticalAlignment="Top" Margin="8,3,0,0"/>
+                            <TextBlock x:Name="TerminalTitle" Text="DemoClient" FontSize="15" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource Ink}"/>
+                        </DockPanel>
+                        <TextBlock x:Name="TerminalVer" Grid.Row="1" Style="{StaticResource MonoText}" Margin="0,7,0,0"
+                                   Foreground="{DynamicResource Ink2}"/>
+                        <TextBlock x:Name="TerminalDir" Grid.Row="2" Style="{StaticResource MonoText}" Margin="0,3,0,0"
+                                   Foreground="{DynamicResource Ink2}" TextTrimming="CharacterEllipsis"/>
+                        <TextBlock x:Name="TerminalCfg" Grid.Row="3" FontSize="11" Margin="0,8,0,0"
+                                   Foreground="{DynamicResource Ink2}"/>
+                    </Grid>
+                </RadioButton>
+
+                <RadioButton x:Name="AppStudio" Style="{StaticResource CardRadio}" GroupName="app" Tag="studio"
+                             Checked="App_Checked" Margin="0,10,0,0">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <DockPanel Grid.Row="0">
+                            <Border x:Name="StudioMark" DockPanel.Dock="Right" Width="11" Height="11" CornerRadius="1"
+                                    BorderBrush="{DynamicResource Ink3}" BorderThickness="1" VerticalAlignment="Top" Margin="8,3,0,0"/>
+                            <TextBlock x:Name="StudioTitle" Text="DemoConsole" FontSize="15" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource Ink}"/>
+                        </DockPanel>
+                        <TextBlock x:Name="StudioVer" Grid.Row="1" Style="{StaticResource MonoText}" Margin="0,7,0,0"
+                                   Foreground="{DynamicResource Ink2}"/>
+                        <TextBlock x:Name="StudioDir" Grid.Row="2" Style="{StaticResource MonoText}" Margin="0,3,0,0"
+                                   Foreground="{DynamicResource Ink2}" TextTrimming="CharacterEllipsis"/>
+                        <TextBlock x:Name="StudioCfg" Grid.Row="3" FontSize="11" Margin="0,8,0,0"
+                                   Foreground="{DynamicResource Ink2}"/>
+                    </Grid>
+                </RadioButton>
+            </StackPanel>
+
+            <!-- 右：参数 + 将要写入 -->
+            <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Text="参数" Style="{StaticResource SectionLabel}" Foreground="{DynamicResource Ink2}"/>
+
+                <Grid Grid.Row="1" Margin="0,10,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="46"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="环境" Foreground="{DynamicResource Ink2}" VerticalAlignment="Center"/>
+                    <Border Grid.Column="1" HorizontalAlignment="Left" BorderBrush="{DynamicResource Line}"
+                            BorderThickness="1" CornerRadius="3" Padding="2">
+                        <Grid x:Name="EnvSlider">
+                            <Border x:Name="EnvThumb" IsHitTestVisible="False" CornerRadius="2"
+                                    Background="{DynamicResource BrandSoft}" BorderBrush="{DynamicResource Brand}"
+                                    BorderThickness="1" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="0">
+                                <Border.RenderTransform>
+                                    <TranslateTransform x:Name="EnvThumbShift"/>
+                                </Border.RenderTransform>
+                            </Border>
+                            <StackPanel Orientation="Horizontal">
+                                <RadioButton x:Name="EnvOnline" Style="{StaticResource SegRadio}" GroupName="env" Tag="online" Checked="Env_Checked"/>
+                                <RadioButton x:Name="EnvLocal" Style="{StaticResource SegRadio}" GroupName="env" Tag="local" Checked="Env_Checked"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <Grid Grid.Row="2" Margin="0,10,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="46"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="版本" Foreground="{DynamicResource Ink2}" VerticalAlignment="Center"/>
+                    <Grid Grid.Column="1">
+                        <Button x:Name="VersionBtn" Style="{StaticResource FieldBtn}" Click="VersionBtn_Click"
+                                ToolTip="选中要操作的 star 版本（写入 appsettings.json 的 ProjectName）">
+                            <TextBlock x:Name="VersionBtnText" FontFamily="{DynamicResource FontMono}" FontSize="12.5"
+                                       Foreground="{DynamicResource Ink}" TextTrimming="CharacterEllipsis"/>
+                        </Button>
+                        <Popup x:Name="VersionPopup" PlacementTarget="{Binding ElementName=VersionBtn}" Placement="Bottom"
+                               StaysOpen="False" AllowsTransparency="True" PopupAnimation="Fade">
+                            <Border Background="{DynamicResource Surface}" BorderBrush="{DynamicResource Line}"
+                                    BorderThickness="1" CornerRadius="3" MinWidth="200" Margin="0,3,0,10">
+                                <StackPanel x:Name="VersionList" Margin="3"/>
+                            </Border>
+                        </Popup>
+                    </Grid>
+                    <Button Grid.Column="2" x:Name="AddVersionBtn" Style="{StaticResource BtnGhost}" Width="34" Margin="8,0,0,0"
+                            Content="+" Click="AddVersion_Click" ToolTip="新增一个 star 版本号"/>
+                </Grid>
+
+                <Grid Grid.Row="3" Margin="0,10,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="46"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="目录" Foreground="{DynamicResource Ink2}" VerticalAlignment="Center"/>
+                    <Grid Grid.Column="1">
+                        <Button x:Name="DirBtn" Style="{StaticResource FieldBtn}" Click="DirBtn_Click"
+                                ToolTip="DemoConsole的安装目录（不同副本可在这里切换）">
+                            <TextBlock x:Name="DirBtnText" FontFamily="{DynamicResource FontMono}" FontSize="12"
+                                       Foreground="{DynamicResource Ink}" TextTrimming="CharacterEllipsis"/>
+                        </Button>
+                        <Popup x:Name="DirPopup" PlacementTarget="{Binding ElementName=DirBtn}" Placement="Bottom"
+                               StaysOpen="False" AllowsTransparency="True" PopupAnimation="Fade">
+                            <Border Background="{DynamicResource Surface}" BorderBrush="{DynamicResource Line}"
+                                    BorderThickness="1" CornerRadius="3" MinWidth="460" Margin="0,3,0,10">
+                                <StackPanel x:Name="DirList" Margin="3"/>
+                            </Border>
+                        </Popup>
+                    </Grid>
+                    <Button Grid.Column="2" x:Name="BrowseBtn" Style="{StaticResource BtnGhost}" Margin="8,0,0,0"
+                            Content="浏览" Click="Browse_Click" ToolTip="选一个含有 DemoConsole.exe 的目录"/>
+                    <Button Grid.Column="3" x:Name="RescanBtn" Style="{StaticResource BtnGhost}" Width="52" Margin="8,0,0,0"
+                            Content="重扫" Click="Rescan_Click" ToolTip="重新在本机找一遍DemoClient / DemoConsole（自动识别，不用填路径）"/>
+                </Grid>
+
+                <!-- 将要写入：界面预览与实际写入是同一份计划，看到的就是写进去的 -->
+                <Border Grid.Row="4" Margin="0,14,0,0" Background="{DynamicResource Surface}"
+                        BorderBrush="{DynamicResource Line}" BorderThickness="1" CornerRadius="4">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Border Grid.Row="0" BorderBrush="{DynamicResource Line}" BorderThickness="0,0,0,1" Padding="12,9">
+                            <DockPanel>
+                                <TextBlock x:Name="DiffHint" DockPanel.Dock="Right" Style="{StaticResource MonoText}"
+                                           Foreground="{DynamicResource Ink2}" VerticalAlignment="Center"/>
+                                <TextBlock Text="将要写入" FontSize="12.5" FontWeight="SemiBold" VerticalAlignment="Center"
+                                           Foreground="{DynamicResource Ink}"/>
+                            </DockPanel>
+                        </Border>
+                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                            <StackPanel x:Name="DiffHost" Margin="2,6,2,8"/>
+                        </ScrollViewer>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+
+        <!-- ================= 状态条 ================= -->
+        <Border x:Name="StatusBar" Grid.Row="3" Background="{DynamicResource Surface}"
+                BorderBrush="{DynamicResource Line}" BorderThickness="0,1,0,0">
+            <Grid Margin="18,0">
+                <StackPanel x:Name="StatusHost" Orientation="Horizontal" VerticalAlignment="Center"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <Button x:Name="KillBtn" Style="{StaticResource LinkBtn}" Content="关闭在跑的实例" Click="Kill_Click"/>
+                    <TextBlock Text="·" Foreground="{DynamicResource Ink3}" Margin="6,0"/>
+                    <Button x:Name="OpenDirBtn" Style="{StaticResource LinkBtn}" Content="打开目录" Click="OpenDir_Click"/>
+                    <TextBlock Text="·" Foreground="{DynamicResource Ink3}" Margin="6,0"/>
+                    <Button x:Name="DiagBtn" Style="{StaticResource LinkBtn}" Content="导出诊断" Click="Diag_Click"/>
+                    <TextBlock Text="·" Foreground="{DynamicResource Ink3}" Margin="6,0"/>
+                    <Button x:Name="HelpBtn" Style="{StaticResource LinkBtn}" Content="说明" Click="Help_Click"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

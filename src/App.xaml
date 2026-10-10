@@ -1,0 +1,15 @@
+<Application x:Class="EnvSwitch.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             ShutdownMode="OnExplicitShutdown">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!-- [0] 主题令牌（运行时按白天/夜晚整体替换） -->
+                <ResourceDictionary Source="主题-白天.xaml"/>
+                <!-- [1] 控件样式（只引用令牌，不写死颜色） -->
+                <ResourceDictionary Source="样式.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

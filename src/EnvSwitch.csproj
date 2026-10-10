@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- 目标框架 = net48（2026-10-09 实测依据）：
+       DemoClient.dll.config 声明 <supportedRuntime sku=".NETFramework,Version=v4.8"/>，
+       两个程序本体也都是 .NET Framework 应用（mscoree.dll 引用 240+ 次）
+       ⇒ 用这两个软件的同事机器上必然已装 4.8 ⇒ 本工具 exe 解压双击即可用，不需要装 .NET 8。 -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net48</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <AssemblyName>EnvSwitch</AssemblyName>
+    <RootNamespace>EnvSwitch</RootNamespace>
+    <ApplicationIcon>图标.ico</ApplicationIcon>
+    <AssemblyTitle>EnvSwitch</AssemblyTitle>
+    <Product>EnvSwitch</Product>
+    <Company>maintainer</Company>
+    <Version>1.1.0</Version>
+    <FileVersion>1.1.0.0</FileVersion>
+    <DebugType>none</DebugType>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+    <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- 编译期参考程序集（本机没装 VS / targeting pack），只参与编译，不进产物 -->
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net48" Version="1.0.3" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml" SubType="Designer" Generator="MSBuild:Compile" />
+    <Resource Include="图标.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- 选文件夹用 WinForms 的 FolderBrowserDialog（net48 自带 System.Windows.Forms） -->
+    <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+
+</Project>

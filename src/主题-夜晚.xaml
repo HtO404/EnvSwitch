@@ -1,0 +1,33 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- 夜晚：近黑底（带 2% 绿相，不是「深蓝底+霓虹」那个禁区组合）+ 湖绿主色（用户指定）。
+         色值经 tools\对比度体检.py 实测达标。 -->
+    <SolidColorBrush x:Key="Bg" Color="#0A0D0C"/>
+    <SolidColorBrush x:Key="Surface" Color="#121615"/>
+    <SolidColorBrush x:Key="SurfaceAlt" Color="#171E1C"/>
+    <SolidColorBrush x:Key="Line" Color="#223029"/>
+    <SolidColorBrush x:Key="LineSoft" Color="#1A2422"/>
+    <SolidColorBrush x:Key="Ink" Color="#E7EFEC"/>
+    <SolidColorBrush x:Key="Ink2" Color="#93A39E"/>
+    <SolidColorBrush x:Key="Ink3" Color="#5B6663"/>
+
+    <SolidColorBrush x:Key="Brand" Color="#3ED0AE"/>
+    <SolidColorBrush x:Key="BrandHover" Color="#2AA98C"/>
+    <SolidColorBrush x:Key="BrandPress" Color="#24987C"/>
+    <SolidColorBrush x:Key="BrandSoft" Color="#0E2019"/>
+    <SolidColorBrush x:Key="OnBrand" Color="#04120E"/>
+
+    <SolidColorBrush x:Key="Danger" Color="#F0706F"/>
+    <SolidColorBrush x:Key="DangerFill" Color="#F0706F"/>
+    <SolidColorBrush x:Key="OnDanger" Color="#0A0D0C"/>
+    <SolidColorBrush x:Key="DangerInk" Color="#FF9A99"/>
+    <SolidColorBrush x:Key="Ok" Color="#4FCB92"/>
+
+    <SolidColorBrush x:Key="MarkDay" Color="#C2570F"/>
+    <SolidColorBrush x:Key="MarkNight" Color="#3ED0AE"/>
+
+    <FontFamily x:Key="FontDisplay">Noto Sans SC, Microsoft YaHei UI</FontFamily>
+    <FontFamily x:Key="FontBody">Noto Sans SC, Microsoft YaHei UI</FontFamily>
+    <FontFamily x:Key="FontMono">Cascadia Mono, Consolas, Courier New</FontFamily>
+</ResourceDictionary>
