@@ -138,9 +138,9 @@ assets/        README 用的动效 SVG
 | 项目 | 简介 |
 | --- | --- |
 | **[dsh-chime](https://github.com/HtO404/dsh-chime)** | Task-completion notification chime for the DSH web GUI: beeps when an agent turn finishes, even in background tabs. 10 preset sounds + custom import + volume. |
-| **[yanxi-lake-dashboard](https://github.com/HtO404/yanxi-lake-dashboard)** | yanxi-lake-dashboard |
+| **[yanxi-lake-dashboard](https://github.com/HtO404/yanxi-lake-dashboard)** | 网页/前端、文档项目（64 个文件） |
 | **[FFood](https://github.com/HtO404/FFood)** | 家庭食材新鲜管理系统 |
-| **[Huace](https://github.com/HtO404/Huace)** | Huace |
+| **[Huace](https://github.com/HtO404/Huace)** | 网页/前端、Python、文档项目（400 个文件） |
 | **[kenji-birthday-cake](https://github.com/HtO404/kenji-birthday-cake)** | 仟吉生日蛋糕定制Demo - 支持场景选择、蛋糕模板、配色/装饰/文字/尺寸/口味定制、预览下单 |
 | **[-uiautomator-](https://github.com/HtO404/-uiautomator-)** | 基于uiautomator库对安卓设备进行自动化测试，模拟手动点击行为 |
 
