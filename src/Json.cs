@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 
-namespace DiJian
+namespace EnvSwitch
 {
     /// <summary>
     /// 自带的小 JSON 读写（net48 没有 System.Text.Json，也不想为它多背几个 dll）。
